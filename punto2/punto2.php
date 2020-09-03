@@ -28,13 +28,13 @@
                     return;
                 }
                 if($_SESSION["peso"]>25 && $_SESSION["peso"]<301){
-                    $_SESSION["valor"]=1500;
+                    $_SESSION["valor"]=$_SESSION["peso"]*1500;
                     ingresoBD();
                     header('Location: '.$_SERVER['PHP_SELF']);
                     return;
                 }
                 if($_SESSION["peso"]>299 && $_SESSION["peso"]<501){
-                    $_SESSION["valor"]=2500;
+                    $_SESSION["valor"]=$_SESSION["peso"]*2500;
                     ingresoBD();
                     header('Location: '.$_SERVER['PHP_SELF']);
                     return;
@@ -77,9 +77,13 @@
                 $_SESSION["minvalor"]=$row2["kilo"];
 
                 $stmt4 = $pdo->query('SELECT SUM(kilo) as total FROM infobultos');
-                
                 $row3=$stmt4->fetch(PDO::FETCH_ASSOC);
                 $_SESSION["promedio"]=$row3["total"]/$_SESSION["count"];
+
+                $stmt5 = $pdo->query('SELECT SUM(valor) as totalv FROM infobultos');
+                $row4=$stmt5->fetch(PDO::FETCH_ASSOC);
+                $_SESSION["ingresos"]=$row4["totalv"];
+                $_SESSION["dolares"]=$_SESSION["ingresos"]*0.00028;
 
                 
     }
@@ -104,11 +108,13 @@
                         <?php 
                             if(!empty($_SESSION["peso"])  && $_SESSION["error"]==false && $_SESSION["error2"]==false){
                                 
-                                echo('<h6  class="text-center">El valor que se debe pagar es : $'.($_SESSION["valor"])."</h6>\n");
-                                echo('<h6  class="text-center">Numero total de equipajes : '.$_SESSION["count"]."</h6>\n");
-                                echo('<h6  class="text-center">Valor del equipaje mas pesado : '.$_SESSION["maxvalor"]."</h6>\n");
-                                echo('<h6  class="text-center">Valor del equipaje mas liviano : '.$_SESSION["minvalor"]."</h6>\n");
-                                echo('<h6  class="text-center">Peso promedio de los equipajes : '.$_SESSION["promedio"]."</h6>\n");
+                                echo('<h6  class="text-center">Valor a pagar : $'.($_SESSION["valor"])."</h6>\n");
+                                echo('<h6  class="text-center">Numero total de bultos : '.$_SESSION["count"]."</h6>\n");
+                                echo('<h6  class="text-center">Peso del bulto mas liviano : '.$_SESSION["minvalor"]."Kg"."</h6>\n");
+                                echo('<h6  class="text-center">Peso del bulto mas pesado : '.$_SESSION["maxvalor"]."Kg"."</h6>\n");
+                                echo('<h6  class="text-center">Pesos por concepto de carga : '.$_SESSION["ingresos"]."</h6>\n");
+                                echo('<h6  class="text-center">Dolares por concepto de carga : '.$_SESSION["dolares"]."</h6>\n");
+                                echo('<h6  class="text-center">Peso promedio de los bultos : '.$_SESSION["promedio"]."</h6>\n");
                                 unset($_SESSION["valor"]);
                                 unset($_SESSION["peso"]);
                                 unset($_SESSION["error"]);
@@ -140,12 +146,12 @@
                             </div>
                             
                             <div class="row">
-                            <div class="col-md-2 offset-md-3 text-left">
+                            <div class="col-md-2 col-sm-1 col-1 offset-md-3 offset-2 text-left">
                             <div class="previous">
                             <input  type="submit" name="enviar" value="Enviar"  class="btn btn-info   previus">
                             </div>
                             </div>
-                            <div class=" col-md-2 text-right">   
+                            <div class=" col-md-2 col-sm-1 col-1 offset-md-1 offset-2 text-right">   
                             <div class=" next">
                             <input  type="submit" name="restablecer" value="Restablecer"  class="btn btn-primary  offset-md-2 next"><br>
                             </div>
@@ -164,7 +170,7 @@
             
                 <thead>
                     <tr class="text-center">
-                        <th>Kilo</th>
+                        <th>Peso(Kg)</th>
                         <th>Valor</th>
 
                     </tr>
@@ -187,7 +193,7 @@
                 </tbody>
         
             </table>
-               
+              <a class="text-center"href="../index.html">Salir</a> 
 
         </div>
     </div>

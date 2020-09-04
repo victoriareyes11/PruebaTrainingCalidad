@@ -23,18 +23,21 @@
 
                 if($_SESSION["peso"]>=0 && $_SESSION["peso"]<26){
                     $_SESSION["valor"]=0;
+                    
                     ingresoBD();
                     header('Location: '.$_SERVER['PHP_SELF']);
                     return;
                 }
                 if($_SESSION["peso"]>25 && $_SESSION["peso"]<301){
                     $_SESSION["valor"]=$_SESSION["peso"]*1500;
+                    
                     ingresoBD();
                     header('Location: '.$_SERVER['PHP_SELF']);
                     return;
                 }
                 if($_SESSION["peso"]>299 && $_SESSION["peso"]<501){
                     $_SESSION["valor"]=$_SESSION["peso"]*2500;
+                    
                     ingresoBD();
                     header('Location: '.$_SERVER['PHP_SELF']);
                     return;
@@ -55,7 +58,9 @@
             $pdo = conexionSQL();
             $stmt = $pdo->prepare('DELETE FROM infobultos');
             $stmt->execute( );
-            unset($_SESSION["count"]);
+            setcookie('contador', 1, time() + 365*24*60*60);
+            
+    
 
         }
     
@@ -63,11 +68,11 @@
     function ingresoBD(){
         
         $pdo = conexionSQL();
-        $_SESSION["count"]=$_SESSION["count"]+1;
-            $stmt = $pdo->prepare('INSERT INTO infobultos(kilo, valor) VALUES ( :kilo, :valor)');
-                    
-                $stmt -> bindParam(":kilo", $_SESSION["peso"], PDO::PARAM_STR);
+            
+            $stmt = $pdo->prepare('INSERT INTO infobultos( kilo, valor) VALUES ( :kilo, :valor)');   
+                $stmt -> bindParam(":kilo", $_SESSION["peso"], PDO::PARAM_INT);
                 $stmt -> bindParam(":valor", $_SESSION["valor"], PDO::PARAM_INT);
+                
                 $stmt->execute( );
 
                 $stmt2 = $pdo->query('SELECT* FROM infobultos ORDER BY infobultos.kilo DESC LIMIT 1');
@@ -80,13 +85,14 @@
 
                 $stmt4 = $pdo->query('SELECT SUM(kilo) as total FROM infobultos');
                 $row3=$stmt4->fetch(PDO::FETCH_ASSOC);
-                $_SESSION["promedio"]=$row3["total"]/$_SESSION["count"];
+                $_SESSION["promedio"]=$row3["total"]/$_COOKIE['contador'];
                 $_SESSION["promedio"]=round($_SESSION["promedio"],3);
 
                 $stmt5 = $pdo->query('SELECT SUM(valor) as totalv FROM infobultos');
                 $row4=$stmt5->fetch(PDO::FETCH_ASSOC);
                 $_SESSION["ingresos"]=$row4["totalv"];
                 $_SESSION["dolares"]=$_SESSION["ingresos"]*0.00028;
+
 
                 
     }
@@ -110,9 +116,11 @@
                         <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>"> 
                         <?php 
                             if(!empty($_SESSION["peso"])  && $_SESSION["error"]==false && $_SESSION["error2"]==false){
-                                
+                                setcookie('contador', $_COOKIE['contador'] + 1, time()+365*24*60*60); 
+        
+                                  
                                 echo('<h6  class="text-center">Valor a pagar : $'.($_SESSION["valor"])."</h6>\n");
-                                echo('<h6  class="text-center">Numero total de bultos : '.$_SESSION["count"]."</h6>\n");
+                                echo('<h6  class="text-center">Numero total de bultos : '.$_COOKIE['contador']."</h6>\n");
                                 echo('<h6  class="text-center">Peso del bulto mas liviano : '.$_SESSION["minvalor"]."Kg"."</h6>\n");
                                 echo('<h6  class="text-center">Peso del bulto mas pesado : '.$_SESSION["maxvalor"]."Kg"."</h6>\n");
                                 echo('<h6  class="text-center">Pesos por concepto de carga : '.$_SESSION["ingresos"]."</h6>\n");

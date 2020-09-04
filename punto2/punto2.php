@@ -49,16 +49,17 @@
             header('Location: '.$_SERVER['PHP_SELF']);
             return;
         }
+    }else{
+
+        if(!empty($_POST['restablecer'])){
+            $pdo = conexionSQL();
+            $stmt = $pdo->prepare('DELETE FROM infobultos');
+            $stmt->execute( );
+            unset($_SESSION["count"]);
+
+        }
     }
 
-    if(!empty($_POST['restablecer'])){
-        echo ("entro");
-        unset($_SESSION["count"]);
-        $pdo = conexionSQL();
-        $stmt = $pdo->prepare('DELETE FROM infobultos');
-        $stmt->execute( );
-
-    }
     function ingresoBD(){
         
         $pdo = conexionSQL();

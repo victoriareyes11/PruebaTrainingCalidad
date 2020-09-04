@@ -52,7 +52,7 @@
                             if(!empty($_SESSION["valor_pasaje"])){
                                 echo('<h6  class="text-center">El valor del pasaje es : $'.($_SESSION["valor_pasaje"])."</h6>\n");
                                 unset($_SESSION["valor_pasaje"]);
-                                session_destroy();
+                                
                                 
                                 }
                             

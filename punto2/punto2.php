@@ -52,6 +52,7 @@
     }
 
     if(!empty($_POST['restablecer'])){
+        echo ("entro");
         unset($_SESSION["count"]);
         $pdo = conexionSQL();
         $stmt = $pdo->prepare('DELETE FROM infobultos');
@@ -79,6 +80,7 @@
                 $stmt4 = $pdo->query('SELECT SUM(kilo) as total FROM infobultos');
                 $row3=$stmt4->fetch(PDO::FETCH_ASSOC);
                 $_SESSION["promedio"]=$row3["total"]/$_SESSION["count"];
+                $_SESSION["promedio"]=round($_SESSION["promedio"],3);
 
                 $stmt5 = $pdo->query('SELECT SUM(valor) as totalv FROM infobultos');
                 $row4=$stmt5->fetch(PDO::FETCH_ASSOC);

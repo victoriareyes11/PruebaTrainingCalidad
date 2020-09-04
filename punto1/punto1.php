@@ -73,6 +73,7 @@
     
                 </div>
             </div>
+                <a class="text-center"href="../index.html">Salir</a>
         </div>
     </div>
 

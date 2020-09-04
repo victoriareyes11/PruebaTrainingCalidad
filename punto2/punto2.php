@@ -19,6 +19,12 @@
    
     if(!empty($_POST['enviar'])){
         $_SESSION["peso"] = $_POST['peso'];
+        #$pdo = conexionSQL();
+        #$stmt7 = $pdo->query('SELECT SUM(kilo) as total FROM infobultos');
+        #$row7=$stmt7->fetch(PDO::FETCH_ASSOC);
+        #$_SESSION["total"]=$row7["total"];
+
+        if($_SESSION["total"]<17501){
         if( $_SESSION["peso"]>=-1 ){
             if( $_SESSION["peso"]<501){
 
@@ -53,6 +59,11 @@
             header('Location: '.$_SERVER['PHP_SELF']);
             return;
         }
+        }else{
+            $_SESSION["error3"]=true;
+            header('Location: '.$_SERVER['PHP_SELF']);
+            return;
+        }
     }
 
         if(!empty($_POST['restablecer'])){
@@ -61,6 +72,7 @@
             $stmt->execute( );
             $stmt2 = $pdo->prepare('ALTER TABLE infobultos AUTO_INCREMENT = 1');
             $stmt2->execute( );
+            unset($_SESSION["total"]);
      
         }
     
@@ -90,6 +102,7 @@
 
                 $stmt4 = $pdo->query('SELECT SUM(kilo) as total FROM infobultos');
                 $row3=$stmt4->fetch(PDO::FETCH_ASSOC);
+                $_SESSION["total"]=$row3["total"];
                 $_SESSION["promedio"]=$row3["total"]/ $_SESSION["cont"];
                 $_SESSION["promedio"]=round($_SESSION["promedio"],3);
 
@@ -124,7 +137,7 @@
                     <div class="card-body">
                         <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>"> 
                         <?php 
-                            if(!empty($_SESSION["peso"])  && $_SESSION["error"]==false && $_SESSION["error2"]==false){
+                            if(!empty($_SESSION["peso"])  && $_SESSION["error"]==false && $_SESSION["error2"]==false && $_SESSION["error3"]==false){
                                
                                   
                                 echo('<h6  class="text-center">Valor a pagar : $'.($_SESSION["valor"])."</h6>\n");
@@ -134,7 +147,7 @@
                                 echo('<h6  class="text-center">Pesos por concepto de carga : '.$_SESSION["ingresos"]."</h6>\n");
                                 echo('<h6  class="text-center">Dolares por concepto de carga : '.$_SESSION["dolares"]."</h6>\n");
                                 echo('<h6  class="text-center">Peso promedio de los bultos : '.$_SESSION["promedio"]."</h6>\n");
-                              
+                                echo('<h6  class="text-center">Peso total : '.$_SESSION["total"]."</h6>\n");
                                 unset($_SESSION["valor"]);
                                 unset($_SESSION["peso"]);
                                 unset($_SESSION["error"]);
@@ -153,6 +166,13 @@
                             if($_SESSION["error2"]==true){
                                 echo('<h6  class="text-center">Error: Entrada invalida '."</h6>\n");
                                 unset($_SESSION["error2"]);
+                                unset($_SESSION["valor"]);
+                                unset($_SESSION["peso"]);
+                                
+                            }
+                            if($_SESSION["error3"]==true){
+                                echo('<h6  class="text-center">Error: Supero el peso maximo '."</h6>\n");
+                                unset($_SESSION["error3"]);
                                 unset($_SESSION["valor"]);
                                 unset($_SESSION["peso"]);
                                 

@@ -16,6 +16,7 @@
 
 <?php 
    
+   
     if(!empty($_POST['enviar'])){
         $_SESSION["peso"] = $_POST['peso'];
         if( $_SESSION["peso"]>=-1 ){
@@ -58,16 +59,16 @@
             $pdo = conexionSQL();
             $stmt = $pdo->prepare('DELETE FROM infobultos');
             $stmt->execute( );
-            setcookie('contador', 1, time() + 365*24*60*60);
-            
-    
-
+            $stmt2 = $pdo->prepare('ALTER TABLE infobultos AUTO_INCREMENT = 1');
+            $stmt2->execute( );
+     
         }
     
 
     function ingresoBD(){
         
         $pdo = conexionSQL();
+        
             
             $stmt = $pdo->prepare('INSERT INTO infobultos( kilo, valor) VALUES ( :kilo, :valor)');   
                 $stmt -> bindParam(":kilo", $_SESSION["peso"], PDO::PARAM_INT);
@@ -83,9 +84,13 @@
                 $row2=$stmt3->fetch(PDO::FETCH_ASSOC);
                 $_SESSION["minvalor"]=$row2["kilo"];
 
+                $stmt6 = $pdo->query('SELECT* FROM infobultos ORDER BY infobultos.id DESC LIMIT 1');
+                $row5=$stmt6->fetch(PDO::FETCH_ASSOC);
+                $_SESSION["cont"]=$row5["id"];
+
                 $stmt4 = $pdo->query('SELECT SUM(kilo) as total FROM infobultos');
                 $row3=$stmt4->fetch(PDO::FETCH_ASSOC);
-                $_SESSION["promedio"]=$row3["total"]/$_COOKIE['contador'];
+                $_SESSION["promedio"]=$row3["total"]/ $_SESSION["cont"];
                 $_SESSION["promedio"]=round($_SESSION["promedio"],3);
 
                 $stmt5 = $pdo->query('SELECT SUM(valor) as totalv FROM infobultos');
@@ -93,9 +98,13 @@
                 $_SESSION["ingresos"]=$row4["totalv"];
                 $_SESSION["dolares"]=$_SESSION["ingresos"]*0.00028;
 
+                
+
 
                 
     }
+   
+    
 ?>
 
 
@@ -116,23 +125,23 @@
                         <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>"> 
                         <?php 
                             if(!empty($_SESSION["peso"])  && $_SESSION["error"]==false && $_SESSION["error2"]==false){
-                                setcookie('contador', $_COOKIE['contador'] + 1, time()+365*24*60*60); 
-        
+                               
                                   
                                 echo('<h6  class="text-center">Valor a pagar : $'.($_SESSION["valor"])."</h6>\n");
-                                echo('<h6  class="text-center">Numero total de bultos : '.$_COOKIE['contador']."</h6>\n");
+                                echo('<h6  class="text-center">Numero total de bultos : '.$_SESSION["cont"]."</h6>\n");
                                 echo('<h6  class="text-center">Peso del bulto mas liviano : '.$_SESSION["minvalor"]."Kg"."</h6>\n");
                                 echo('<h6  class="text-center">Peso del bulto mas pesado : '.$_SESSION["maxvalor"]."Kg"."</h6>\n");
                                 echo('<h6  class="text-center">Pesos por concepto de carga : '.$_SESSION["ingresos"]."</h6>\n");
                                 echo('<h6  class="text-center">Dolares por concepto de carga : '.$_SESSION["dolares"]."</h6>\n");
                                 echo('<h6  class="text-center">Peso promedio de los bultos : '.$_SESSION["promedio"]."</h6>\n");
+                              
                                 unset($_SESSION["valor"]);
                                 unset($_SESSION["peso"]);
                                 unset($_SESSION["error"]);
                                 
                                 
                                 
-                                }
+                            }
                             if($_SESSION["error"]==true){
                                 echo('<h6  class="text-center">Error: El peso del equipaje supera el peso maximo '."</h6>\n");
                                 unset($_SESSION["error"]);
@@ -151,8 +160,8 @@
                             
                             ?>
                         
-                            <div class="form-group">
-                                <label for="peso">Ingrese el peso del equipaje</label>
+                            <div class="form-group text-center">
+                                <label for="peso" >Ingrese el peso del equipaje</label>
                                 <input type="number" name="peso"	class="form-control" id="peso"	placeholder="Ingrese el valor en Kg" >
                             </div>
                             
@@ -176,13 +185,14 @@
             </div>
             <?php 
             $pdo = conexionSQL();
-            $stmt = $pdo->query('SELECT kilo,valor FROM infobultos');?>
+            $stmt = $pdo->query('SELECT kilo,valor,id FROM infobultos');?>
                 <table class="table-bordered col-md-4 offset-md-4" >
             
                 <thead>
                     <tr class="text-center">
+                        <th>#</th>
                         <th>Peso(Kg)</th>
-                        <th>Valor</th>
+                        <th>Valor($)</th>
 
                     </tr>
                 </thead>
@@ -192,6 +202,7 @@
         
                     while($row=$stmt->fetch(PDO::FETCH_ASSOC)){
                         echo '<tr>
+                            <td>'.$row["id"].'</td>
                             <td>'.$row["kilo"].'</td>
                             <td>'.$row["valor"].'</td>
                            

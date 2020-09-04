@@ -49,7 +49,7 @@
             header('Location: '.$_SERVER['PHP_SELF']);
             return;
         }
-    }else{
+    }
 
         if(!empty($_POST['restablecer'])){
             $pdo = conexionSQL();
@@ -58,7 +58,7 @@
             unset($_SESSION["count"]);
 
         }
-    }
+    
 
     function ingresoBD(){
         

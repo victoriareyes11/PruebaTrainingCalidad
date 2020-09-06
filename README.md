@@ -8,6 +8,6 @@ En el Backend se utilizó PHP para darle solución a los algoritmos como se menc
 la conexión con la base de datos MySQL, lo cual se hizo utilizando la extensión PDO que a su vez se usó para ejecutar sentencias que permitieran 
 seleccionar, agregar, eliminar y obtener los valores máximos y mínimos que se requerían para darle solución al segundo algoritmo.
 
-Para ejecutar la solución se puede hacer uso de la siguiente URL https://pink-newt-6.loca.lt/php/TrainingCalidad/PruebaTrainingCalidad/
+Para ejecutar la solución se puede hacer uso de la siguiente URL https://pink-rabbit-7.loca.lt/php/TrainingCalidad/PruebaTrainingCalidad/index.html
 Nota: Al solicitar un subdominio personalizado gratuito cambiare constantemente la URL para evitar problemas, ya que este puede ser utilizado cada que sea necesario, siempre y cuando dicho subdominio no esté siendo utilizado ya por otra persona.
 
